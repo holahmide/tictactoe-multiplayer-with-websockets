@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+      integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>TicTacToe App</title>
+  </head>
+  <body>
+    <div id="game-container">
+      <div style="width: 50%" id="waiting-players-div">
+        List of Players in waiting room
+        <ul id="waiting-players">
+          <li>
+            <button>Play</button>
+          </li>
+        </ul>
+      </div>
+      <hr />
+      <div id="requests-sent-div">
+        List of Requests send
+        <ul id="requests-sent">
+          <li></li>
+        </ul>
+      </div>
+      <hr />
+      <div id="message-div">
+        Message
+        <div id="message"></div>
+      </div>
+      <hr />
+      <div id="game-div" style="display: none">
+        <div id="opponent-details"></div>
+        <div class="container">
+          Simple X & 0 game <br />
+          Instructions <br />
+          <ul>
+            <li>First User is represented with X</li>
+            <li>Second User is represented with O</li>
+          </ul>
+          <hr />
+
+          <div>
+            Turn Instructor<br />
+            <div id="">
+              <span id="turn"><b>It's X turn</b></span>
+            </div>
+          </div>
+          <hr />
+
+          <div>
+            Display Mesaage <br />
+            <div id="game-alert_div">
+              <span id="game-alert"></span>
+            </div>
+          </div>
+          <hr />
+        </div>
+        <div>
+          <table class="table">
+            <tr class="row">
+              <td class="cell" id="1,1" onclick="setGame('1,1')"></td>
+              <td class="cell" id="1,2" onclick="setGame('1,2')"></td>
+              <td class="cell" id="1,3" onclick="setGame('1,3')"></td>
+            </tr>
+            <tr class="row">
+              <td class="cell" id="2,1" onclick="setGame('2,1')"></td>
+              <td class="cell" id="2,2" onclick="setGame('2,2')"></td>
+              <td class="cell" id="2,3" onclick="setGame('2,3')"></td>
+            </tr>
+            <tr class="row">
+              <td class="cell" id="3,1" onclick="setGame('3,1')"></td>
+              <td class="cell" id="3,2" onclick="setGame('3,2')"></td>
+              <td class="cell" id="3,3" onclick="setGame('3,3')"></td>
+            </tr>
+          </table>
+
+          <br />
+          <button onclick="resetGame()">Restart Game</button>
+        </div>
+        <div>Scores show here</div>
+      </div>
+      <hr />
+      <div id="cancel-game-div" style="display: none">
+        The game was cancelled, go back to game room<button
+          onClick="window.location.reload();"
+        >
+          Back
+        </button>
+      </div>
+    </div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.3/qs.min.js"
+      integrity="sha512-juaCj8zi594KHQqb92foyp87mCSriYjw3BcTHaXsAn4pEB1YWh+z+XQScMxIxzsjfM4BeVFV3Ij113lIjWiC2w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>

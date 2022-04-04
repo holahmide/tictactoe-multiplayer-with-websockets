@@ -8,6 +8,7 @@ const {
   getWaitingPlayers,
   removePlayer,
   getPlayer,
+  updatePlayer,
 } = require("./utils/players");
 
 const app = express();
@@ -25,10 +26,11 @@ io.on("connection", (socket) => {
       id: socket.id,
       username,
       isPlaying: false,
+      opponent: null
     });
 
     // Update awating players for every user
-    io.emit("updateWaitingPlayers", getWaitingPlayers());
+    io.emit("updateWaitingPlayers", getWaitingPlayers(socket.id));
   });
 
   // On new request to play
@@ -41,19 +43,46 @@ io.on("connection", (socket) => {
 
   // confirm request to play and start game for both players
   socket.on("confirmPlayRequest", ({ id }) => {
+    const opponent = getPlayer(id);
+    const user = getPlayer(socket.id);
+
+    if (opponent) {
+      if (opponent.isPlaying) {
+        return io.to(socket.id).emit("endGame", opponent);
+      }
+      // update users playing status
+      updatePlayer({...opponent, isPlaying: true, opponent: user.id})
+      updatePlayer({...user, isPlaying: true, opponent: opponent.id})
+      io.to(id).emit("startGame", { ...user, denotation: "O" });
+      io.to(socket.id).emit("startGame", { ...opponent, denotation: "X" });
+    }
+  });
+
+  // when the user updates the game
+  socket.on("updateGame", ({ id, location }) => {
     const user = getPlayer(id);
     if (user) {
-      io.to(id).emit("startGame", getPlayer(socket.id));
-      io.to(socket.id).emit("startGame", user);
+      io.to(id).emit("updateGame", { location });
+    }
+  });
+
+  // when the user updates the game
+  socket.on("restartGame", ({ id }) => {
+    const user = getPlayer(id);
+    if (user) {
+      io.to(id).emit("restartGame");
     }
   });
 
   // when the user ends the game
   socket.on("endGame", ({ id }) => {
-    const user = getPlayer(id);
-    if (user) {
-      io.to(id).emit("endGame", getPlayer(socket.id));
-      io.to(socket.id).emit("endGame", user);
+    const user = getPlayer(socket.id);
+    const opponent = getPlayer(id);
+    if (opponent) {
+      updatePlayer({...opponent, isPlaying: false, opponent: null})
+      // updatePlayer({...user, isPlaying: false, opponent: null})
+      io.to(id).emit("endGame", user);
+      io.to(socket.id).emit("endGame", opponent);
     }
   });
 
@@ -61,7 +90,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const user = removePlayer(socket.id);
 
-    if (user) {
+    if (user && user[0]) {
+      if (user[0].opponent) {
+        io.to(user[0].opponent).emit("disruptGame")
+      }
       // Update awating players for every user
       io.emit("updateWaitingPlayers", getWaitingPlayers());
     }

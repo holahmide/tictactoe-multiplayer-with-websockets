@@ -1,13 +1,23 @@
-let user = "O";
+let currentPlayer = "X";
 let gameState = 0;
 let gameWinner = null;
-let opponent = null; // Set when the user starts the game
+let player_1 = {}; // user
+let player_2 = {}; // opponent
+let score = { player_1: 0, player_2: 0 };
 
-const setGame = (location) => {
+const setGame = (location, socketTriggered = false) => {
+  // check if its users turn
   if (gameState == 1) {
     return setMessage(
-      `<b>${gameWinner} already won the game, restart the game!</b>`
+      `<b>${
+        gameWinner == player_1.denotation ? "You" : player_2.username
+      } already won the game, restart the game!</b>`
     );
+  }
+
+  if (!socketTriggered) {
+    if (player_1.denotation != currentPlayer)
+      return setMessage(`Its not your turn!`);
   }
 
   if (gameState == 2) {
@@ -18,19 +28,42 @@ const setGame = (location) => {
     return setMessage("You know you can't play there!!");
   }
 
+  // Emit gameUpdate
+  socket.emit("updateGame", {
+    id: player_2.id,
+    location,
+  });
+
+  displayCellValue(location);
+
+  switchTurn();
+
   setTurn();
 
-  if (user == "X") user = "O";
-  else user = "X";
-
-  document.getElementById(location).innerHTML = user;
   setMessage();
   checkWin();
   if (gameState == 0) checkDraw();
 };
 
-const setTurn = () => {
-  document.getElementById("turn").innerHTML = `<b>It's ${user} turn</b>`;
+const switchTurn = () => {
+  if (currentPlayer == "X") currentPlayer = "O";
+  else currentPlayer = "X";
+};
+
+const displayCellValue = (location, value = currentPlayer) => {
+  console.log(location);
+  if (location) document.getElementById(location).innerHTML = value;
+};
+
+const setTurn = (afterWinOrDraw = false) => {
+  if (afterWinOrDraw) {
+    document.getElementById(
+      "turn"
+    ).innerHTML = `<p>Restart game and continue with previous turn<p>`;
+  } else
+    document.getElementById("turn").innerHTML = `<p><b>It's ${
+      player_1.denotation == currentPlayer ? "your" : player_2.username + "'s"
+    } turn, waiting...</b><p>`;
 };
 
 const setMessage = (message) => {
@@ -90,16 +123,48 @@ const checkDraw = () => {
   }
   if (count == 9) {
     setMessage("<b>The game is a draw</b>");
+    setTurn(true); // onDraw is true
     gameState = 2;
+    showWinOrDrawPopup("draw");
     return true;
   } else return false;
 };
 
+const showWinOrDrawPopup = (status) => {
+  Swal.fire({
+    title: `${(status == "draw" ? "The game was a draw!" : (player_1.denotation == gameWinner ? player_1.username : player_2.username) + " won the game")}`,
+    showDenyButton: true,
+    confirmButtonText: "End Game",
+    denyButtonText: `Cancel`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      confirmEndGame();
+    }
+  });
+};
+
 const setWinner = (winner) => {
+  showWinOrDrawPopup("win");
   gameState = 1;
   gameWinner = winner;
-  setMessage(`<b>The Winner is ${winner} </b>`);
-  // cleardata();
+  setMessage(
+    `<b>${
+      winner == player_1.denotation ? "You" : player_2.username
+    } won the game </b>`
+  );
+  if (winner == player_1.denotation) {
+    score.player_1++;
+  } else {
+    score.player_2++;
+  }
+  updateScore();
+  setTurn(true); // onWin is true
+};
+
+const updateScore = () => {
+  document.getElementById(
+    "score"
+  ).innerHTML = `<b>${score.player_1} : ${score.player_2}`;
 };
 
 const cleardata = () => {
@@ -112,7 +177,22 @@ const cleardata = () => {
   gameWinner = null;
 };
 
-const resetGame = () => {
+const confirmResetGame = () => {
+  Swal.fire({
+    title: `Are you sure you want to restart the game`,
+    showDenyButton: true,
+    confirmButtonText: "Restart Game",
+    denyButtonText: `Cancel`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      resetGame();
+    }
+  });
+};
+
+const resetGame = (socketTriggered = false) => {
   setMessage("<b>Starting a fresh game</b>");
   cleardata();
+  setTurn();
+  if (!socketTriggered) socket.emit("restartGame", { id: player_2.id });
 };

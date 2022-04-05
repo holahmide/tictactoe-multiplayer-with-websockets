@@ -2,13 +2,12 @@ const waitingPlayersList = document.getElementById("waiting-players");
 const gameDiv = document.getElementById("game-div");
 const roomDiv = document.getElementById("room-div");
 const opponentDetailsContainer = document.getElementById("opponent-details");
-const requestsSentDiv = document.getElementById("requests-sent-div");
 const messageDiv = document.getElementById("message-div");
 const cancelGameDiv = document.getElementById("cancel-game-div");
 const restartGameButton = document.getElementById("restart-game-btn");
 const endGameButton = document.getElementById("end-game-btn");
-const requestsSent = [];
 let waitingList = [];
+
 // Get Username from url
 const { username } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
@@ -18,16 +17,6 @@ const socket = io();
 
 // When a new player joins
 socket.emit("newPlayer", { username });
-
-// socket.on message
-socket.on("onMessage", (message, type = 'info') => {
-  Swal.fire({
-    title: 'Error!',
-    text: 'Do you want to continue',
-    // icon: 'error',
-    confirmButtonText: 'Cool'
-  })
-});
 
 // Update list of awaiting users
 socket.on("updateWaitingPlayers", (players) => {
@@ -81,6 +70,9 @@ socket.on("disruptGame", () => {
 
 const updateWaitingPlayers = (players) => {
   players = players.filter(player => player.id != socket.id);
+  if (players.length == 0) {
+    return waitingPlayersList.innerHTML = `Hmmm.. seems like there is no one here, tell a friend to join <a style="color:blue" href="http://tic-tac-toe.aolamide.com" target="_blank">http://tic-tac-toe.aolamide.com</a>`
+  }
   waitingPlayersList.innerHTML = `
     ${players
       .map(
@@ -118,13 +110,6 @@ const sendRequestToPlayer = (id, e) => {
   e.innerHTML = "Requested"
   const player = waitingList.find((el) => el.id === id);
   socket.emit("makePlayRequest", { id });
-  updateRequestsSent(player);
-};
-
-const updateRequestsSent = (player) => {
-  requestsSent.push(player);
-  // requestsSentDiv.innerHTML += `
-  // awaiting <b>${player.username}</b> response</li><br />`;
 };
 
 const showConfirmPlayRequest = ({ id, username }) => {
@@ -173,7 +158,6 @@ const startGame = (opponent) => {
   };
   gameDiv.style.display = "block";
   roomDiv.style.display = "none";
-  // requestsSentDiv.style.display = "none";
   messageDiv.style.display = "none";
   endGameButton.addEventListener("click", function () {
     confirmEndGame(opponent.id);

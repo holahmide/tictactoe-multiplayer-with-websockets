@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 const http = require("http");
 const socketio = require("socket.io");
-const PORT = process.env.PORT || 3000;
 const {
   createNewPlayer,
   getWaitingPlayers,
@@ -10,6 +9,8 @@ const {
   getPlayer,
   updatePlayer,
 } = require("./utils/players");
+require("dotenv").config();
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const server = http.createServer(app);
@@ -26,7 +27,7 @@ io.on("connection", (socket) => {
       id: socket.id,
       username,
       isPlaying: false,
-      opponent: null
+      opponent: null,
     });
 
     // Update awating players for every user
@@ -51,8 +52,8 @@ io.on("connection", (socket) => {
         return io.to(socket.id).emit("endGame", opponent);
       }
       // update users playing status
-      updatePlayer({...opponent, isPlaying: true, opponent: user.id})
-      updatePlayer({...user, isPlaying: true, opponent: opponent.id})
+      updatePlayer({ ...opponent, isPlaying: true, opponent: user.id });
+      updatePlayer({ ...user, isPlaying: true, opponent: opponent.id });
       io.to(id).emit("startGame", { ...user, denotation: "O" });
       io.to(socket.id).emit("startGame", { ...opponent, denotation: "X" });
     }
@@ -79,7 +80,7 @@ io.on("connection", (socket) => {
     const user = getPlayer(socket.id);
     const opponent = getPlayer(id);
     if (opponent) {
-      updatePlayer({...opponent, isPlaying: false, opponent: null})
+      updatePlayer({ ...opponent, isPlaying: false, opponent: null });
       // updatePlayer({...user, isPlaying: false, opponent: null})
       io.to(id).emit("endGame", user);
       io.to(socket.id).emit("endGame", opponent);
@@ -92,7 +93,7 @@ io.on("connection", (socket) => {
 
     if (user && user[0]) {
       if (user[0].opponent) {
-        io.to(user[0].opponent).emit("disruptGame")
+        io.to(user[0].opponent).emit("disruptGame");
       }
       // Update awating players for every user
       io.emit("updateWaitingPlayers", getWaitingPlayers());

@@ -1,12 +1,12 @@
 let currentPlayer = "X";
-let gameState = 0;
+let gameState = 0; // 1: Win, 2: Draw
 let gameWinner = null;
 let player_1 = {}; // user
 let player_2 = {}; // opponent
 let score = { player_1: 0, player_2: 0 };
 
 const setGame = (location, socketTriggered = false) => {
-  // check if its users turn
+  // check if its user's turn
   if (gameState == 1) {
     return setMessage(
       `<b>${
@@ -26,7 +26,6 @@ const setGame = (location, socketTriggered = false) => {
 
   if (document.getElementById(location).innerHTML.trim() != "") {
     return 
-    //return setMessage("You know you can't play there!!");
   }
 
   // Emit gameUpdate
@@ -122,9 +121,9 @@ const checkDraw = () => {
     }
   }
   if (count == 9) {
+    gameState = 2;
     setMessage("<b>The game is a draw</b>");
     setTurn(true); // onDraw is true
-    gameState = 2;
     showWinOrDrawPopup("draw");
     return true;
   } else return false;

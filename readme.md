@@ -1,7 +1,6 @@
 # TIC-TAC-TOE Multiplayer Game with Socket.io and Expressjs 
 
-> You need to have "nodejs" installed on your computer
-> Node package manager "npm" was used for this project
+> You need to have "nodejs" installed on your computer and "npm" was used for this project.
 
 #### Setup code
 
@@ -33,7 +32,7 @@ npm start
 
 ```
 
-### Development mode TailwindCss compiling
+### Development mode TailwindCSS compiling
 
 ```
 npx tailwindcss -i ./public/css/tailwindcss-input.css -o ./public/css/tailwindcss-output.css --watch

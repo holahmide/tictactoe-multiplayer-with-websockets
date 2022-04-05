@@ -13,6 +13,7 @@ const { username } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
+// Initialize socket
 const socket = io();
 
 // When a new player joins
@@ -31,7 +32,8 @@ socket.on("playRequest", (player) => {
 
 // When the play request is confirmed
 socket.on("startGame", (opponent) => {
-  if (opponent.denotation == "O") { // Use this to detect if user initiated the request
+  // The player that requested the game will be denoted as "X"
+  if (opponent.denotation == "O") { // To be sure this user requested the game
     Swal.fire({
       allowOutsideClick: false,
       title: `${opponent.username} accepted your request!`,

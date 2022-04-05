@@ -81,9 +81,8 @@ io.on("connection", (socket) => {
     const opponent = getPlayer(id);
     if (opponent) {
       updatePlayer({ ...opponent, isPlaying: false, opponent: null });
-      // updatePlayer({...user, isPlaying: false, opponent: null})
-      io.to(id).emit("endGame", user);
-      io.to(socket.id).emit("endGame", opponent);
+      io.to(id).emit("endGame", user); // To opponent
+      io.to(socket.id).emit("endGame", opponent); // To user
     }
   });
 

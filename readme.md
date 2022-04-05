@@ -5,7 +5,7 @@
 #### Setup code
 
 ```
-git clone https://github.com/damiisdandy/tictatctoe-multiplayer.com.git tictactoe
+git clone https://github.com/holahmide/tictactoe-multiplayer-with-websockets.git tictactoe
 
 cd tictactoe
 

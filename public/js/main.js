@@ -123,8 +123,8 @@ const sendRequestToPlayer = (id, e) => {
 
 const updateRequestsSent = (player) => {
   requestsSent.push(player);
-  requestsSentDiv.innerHTML += `
-  awaiting <b>${player.username}</b> response</li><br />`;
+  // requestsSentDiv.innerHTML += `
+  // awaiting <b>${player.username}</b> response</li><br />`;
 };
 
 const showConfirmPlayRequest = ({ id, username }) => {
@@ -204,6 +204,10 @@ const goBackToGameRoom = () => {
   roomDiv.style.display = "none";
   cancelGameDiv.style.display = "block";
 };
+
+const goBackToHomePage = () => {
+  window.location.replace('/');
+}
 
 const rejectPlayer = (e) => {
   e.parentNode.style.display='none';

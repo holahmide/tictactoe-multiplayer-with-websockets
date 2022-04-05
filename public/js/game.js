@@ -25,7 +25,8 @@ const setGame = (location, socketTriggered = false) => {
   }
 
   if (document.getElementById(location).innerHTML.trim() != "") {
-    return setMessage("You know you can't play there!!");
+    return 
+    //return setMessage("You know you can't play there!!");
   }
 
   // Emit gameUpdate
@@ -51,7 +52,6 @@ const switchTurn = () => {
 };
 
 const displayCellValue = (location, value = currentPlayer) => {
-  console.log(location);
   if (location) document.getElementById(location).innerHTML = value;
 };
 

@@ -6,6 +6,7 @@ const messageDiv = document.getElementById("message-div");
 const cancelGameDiv = document.getElementById("cancel-game-div");
 const restartGameButton = document.getElementById("restart-game-btn");
 const endGameButton = document.getElementById("end-game-btn");
+const userDiv = document.getElementById("user-div");
 let waitingList = [];
 
 // Get Username from url
@@ -18,6 +19,7 @@ const socket = io();
 
 // When a new player joins
 socket.emit("newPlayer", { username });
+userDiv.innerHTML = `<b>@${username}</b>`
 
 // Update list of awaiting users
 socket.on("updateWaitingPlayers", (players) => {
@@ -121,9 +123,8 @@ const showConfirmPlayRequest = ({ id, username }) => {
       role="alert"
     >
       <strong class="font-bold capitalize"
-        >${username}!</strong
-      >
-      <span class="block sm:inline">wants to play with you</span> <br>
+        >${username}</strong
+      ><span class="block sm:inline">&nbsp;wants to play with you</span> <br>
       <button
         class="bg-green-900 hover:bg-green-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         type="button" 
@@ -166,7 +167,7 @@ const startGame = (opponent) => {
   });
   setTurn();
   opponentDetailsContainer.innerHTML = `
-    <b class="underline decoration-sky-500">You</b> (${player_1.denotation}) vs <span class="capitalize"><b>${opponent.username}</b></span> (${player_2.denotation})`;
+    <b>You</b> (${player_1.denotation}) vs <span class="capitalize"><b>${opponent.username}</b></span> (${player_2.denotation})`;
 };
 
 const updateGame = (location) => {

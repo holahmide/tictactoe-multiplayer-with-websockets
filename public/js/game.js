@@ -143,9 +143,9 @@ const showWinOrDrawPopup = (status) => {
 };
 
 const setWinner = (winner) => {
-  showWinOrDrawPopup("win");
   gameState = 1;
   gameWinner = winner;
+  showWinOrDrawPopup("win");
   setMessage(
     `<b>${
       winner == player_1.denotation ? "You" : player_2.username
